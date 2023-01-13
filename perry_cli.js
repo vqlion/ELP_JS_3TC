@@ -11,7 +11,7 @@ prompt.delimiter = "";
 process.stdin.setRawMode(true);
 process.stdin.resume();
 
-console.log("HI ! I am hello.js, happy to serve you");
+console.log("HI ! I am perry the placlipus, happy to serve you");
 let process_list = [];
 
 prompt.properties = {
