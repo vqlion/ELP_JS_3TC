@@ -20,26 +20,23 @@ prompt.properties = {
   },
 };
 
-function launch_child(programm, async) {
-  //   const pg = spawnSync(programm);
+async function launch_child(programm, id, async) {
   if (async) {
-    exec(programm, (err, stdout, stderr) => {
+    let child = exec(programm, (err, stdout, stderr) => {
       if (err) {
         console.error("Couldn't run", programm);
         return;
       }
-      console.log("output:");
       console.log(stdout);
+      // console.log("exiting", programm);
+    });
+    child.on("close", (id) => {
+      console.log(child.spawnargs[2], "closed");
+      process_index = process_list.indexOf({id: id, name: child.spawnargs[2]})
+      process_list.pop(process_index)
     });
   } else {
-    execFile(programm, (err, stdout, stderr) => {
-      if (err) {
-        console.error("Couldn't run", programm);
-        return;
-      }
-      console.log("output:");
-      console.log(stdout);
-    });
+    child = execSync(programm, { stdio: "inherit" })
   }
 }
 
@@ -56,17 +53,20 @@ async function run() {
     let user_input = user_input_str.split(" ");
     if (user_input[0] == "run") {
       if (user_input[user_input.length - 1] == "!") {
-        launch_child(user_input[1], 1);
+        child_id = process_list.length
+        launch_child(user_input[1], child_id, 1);
         process_list.push({
-          id: process_list.length,
+          id: child_id,
           name: user_input[1],
         });
       } else {
-        launch_child(user_input[1]);
+        child_id = process_list.length
+        await launch_child(user_input[1], child_id);
         process_list.push({
           id: process_list.length,
           name: user_input[1],
         });
+        console.log('here')
       }
     } else if (user_input[0] == "lp") {
       console.log(process_list);
