@@ -12,6 +12,7 @@ process.stdin.setRawMode(true);
 process.stdin.resume();
 
 console.log("HI ! I am perry the placlipus, happy to serve you");
+let process_id_list = [];
 let process_list = [];
 
 prompt.properties = {
@@ -23,7 +24,7 @@ prompt.properties = {
 async function launch_child(programm, id, async) {
   const child_id = id;
   if (async) {
-    let child = exec(programm, (err, stdout, stderr) => {
+    let child = exec(programm, {detached: true}, (err, stdout, stderr) => {
       if (err) {
         console.error("Couldn't run", programm);
         return;
@@ -33,11 +34,13 @@ async function launch_child(programm, id, async) {
     });
     child.on("close", () => {
       console.log(child.spawnargs[2], "closed");
-      console.log(child_id);
-      process_list.splice(child_id.id, 1);
+      process_id_list.splice(child_id.id - 1, 1);
     });
+    child_id.pid = child.pid;
+    console.log(child_id);
+    return child;
   } else {
-    child = execSync(programm, { stdio: "inherit" });
+    let child = execSync(programm, { stdio: "inherit" });
   }
 }
 
@@ -55,17 +58,30 @@ async function run() {
     if (user_input[0] == "run") {
       if (user_input[user_input.length - 1] == "!") {
         child_id = {
-          id: process_list.length,
+          id: process_id_list.length + 1,
           name: user_input[1],
         };
-        launch_child(user_input[1], child_id, 1);
-        process_list.push(child_id);
+        process_list.push(launch_child(user_input[1], child_id, 1));
+        process_id_list.push(child_id);
       } else {
+        child_id = {
+          id: process_id_list.length + 1,
+          name: user_input[1],
+        };
         await launch_child(user_input[1], child_id);
         console.log("here");
       }
     } else if (user_input[0] == "lp") {
+      console.log(process_id_list);
       console.log(process_list);
+    } else if (user_input[0] == "bing") {
+      if (user_input[1] == "-k") {
+        id_to_kill = parseInt(user_input[2]);
+        pid_to_kill = process_id_list[id_to_kill - 1].pid;
+        console.log(id_to_kill);
+        console.log(pid_to_kill);
+        process.kill(pid_to_kill, "SIGKILL");
+      }
     }
   }
 }
