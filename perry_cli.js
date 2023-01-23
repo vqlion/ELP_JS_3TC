@@ -24,7 +24,7 @@ prompt.properties = {
 async function launch_child(programm, id, async) {
   const child_id = id;
   if (async) {
-    let child = exec(programm, {detached: true}, (err, stdout, stderr) => {
+    let child = exec(programm, { detached: true }, (err, stdout, stderr) => {
       if (err) {
         console.error("Couldn't run", programm);
         return;
@@ -36,8 +36,8 @@ async function launch_child(programm, id, async) {
       console.log(child.spawnargs[2], "closed");
       process_id_list.splice(child_id.id - 1, 1);
     });
-    child_id.pid = child.pid;
-    console.log(child_id);
+    // child_id.pid = child.pid;
+    // console.log(child_id);
     return child;
   } else {
     let child = execSync(programm, { stdio: "inherit" });
@@ -59,29 +59,42 @@ async function run() {
       if (user_input[user_input.length - 1] == "!") {
         child_id = {
           id: process_id_list.length + 1,
-          name: user_input[1],
+          name: user_input.slice(1, user_input.length - 1).join(" "),
+          paused: false,
         };
-        process_list.push(launch_child(user_input[1], child_id, 1));
+        process_list.push(
+          launch_child(
+            user_input.slice(1, user_input.length - 1).join(" "),
+            child_id,
+            1
+          )
+        );
         process_id_list.push(child_id);
       } else {
         child_id = {
           id: process_id_list.length + 1,
-          name: user_input[1],
+          name: user_input.slice(user_input.slice(1)).join(" "),
+          paused: false,
         };
-        await launch_child(user_input[1], child_id);
+        await launch_child(user_input.slice(1).join(" "), child_id);
         console.log("here");
       }
     } else if (user_input[0] == "lp") {
       console.log(process_id_list);
-      console.log(process_list);
     } else if (user_input[0] == "bing") {
+      id_to_kill = parseInt(user_input[2]);
+      pid_to_kill = process_id_list[id_to_kill - 1].pid;
       if (user_input[1] == "-k") {
-        id_to_kill = parseInt(user_input[2]);
-        pid_to_kill = process_id_list[id_to_kill - 1].pid;
-        console.log(id_to_kill);
-        console.log(pid_to_kill);
-        process.kill(pid_to_kill, "SIGKILL");
+        exec(`pkill -9 -P ${pid_to_kill}`);
+      } else if (user_input[1] == "-p") {
+        exec(`pkill -19 -P ${pid_to_kill}`);
+        process_id_list[id_to_kill - 1].paused = true;
+      } else if (user_input[1] == "-c") {
+        exec(`pkill -18 -P ${pid_to_kill}`);
+        process_id_list[id_to_kill - 1].paused = false;
       }
+    } else {
+      console.log("Sorry, unrecognized command.");
     }
   }
 }
