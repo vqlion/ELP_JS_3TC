@@ -20,6 +20,7 @@ async function launch_child(programm, id, async) {
                     if (err) {
                         reject(child_id);
                     }
+                    console.log(stdout)
                     resolve(child_id);
                 }
             );
