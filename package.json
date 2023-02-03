@@ -1,0 +1,24 @@
+{
+  "name": "vclion",
+  "version": "1.0.0",
+  "description": "An interactive cli REPL built with node js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vqlion/ELP_JS_3TC.git"
+  },
+  "author": "vqlion",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vqlion/ELP_JS_3TC/issues"
+  },
+  "homepage": "https://github.com/vqlion/ELP_JS_3TC#readme",
+  "keywords": [],
+  "dependencies": {
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {}
+}
