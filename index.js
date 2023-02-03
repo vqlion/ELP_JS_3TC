@@ -20,7 +20,7 @@ async function launch_child(programm, id, async) {
                     if (err) {
                         reject(child_id);
                     }
-                    console.log(stdout)
+                    console.log(stdout);
                     resolve(child_id);
                 }
             );
@@ -60,13 +60,15 @@ function print_processes(list) {
 }
 
 function print_help() {
-	console.log("Here is a list of the commands:")
-	console.log("Use 'run <program>' to launch any program")
-	console.log("Use 'run <program> !' to launch any program in background")
-	console.log("Use 'lp' to get a list of all the programs launched")
-	console.log("Use 'bing [-k|-p|-c] <id>' to kill/pause/resume the program given by its id")
-	console.log()
-	console.log("To quit the CLI, hit CTRL-P")
+    console.log("Here is a list of the commands:");
+    console.log("Use 'run <program>' to launch any program");
+    console.log("Use 'run <program> !' to launch any program in background");
+    console.log("Use 'lp' to get a list of all the programs launched");
+    console.log(
+        "Use 'bing [-k|-p|-c] <id>' to kill/pause/resume the program given by its id"
+    );
+    console.log();
+    console.log("To quit the CLI, hit CTRL-P");
 }
 
 async function cli() {
@@ -124,12 +126,9 @@ async function cli() {
                     name: user_input.slice(user_input.slice(1)).join(" "),
                     paused: false,
                 };
-                await launch_child(
-                    user_input.slice(1).join(" "),
-                    child_id
-                ).catch((err) =>
-                    console.log("This command failed. It may not exist.")
-                );
+                await launch_child(user_input.slice(1).join(" "), child_id)
+                    .then((ans) => {})
+                    .catch((err) => {});
             }
         } else if (user_input[0] == "lp") {
             print_processes(process_id_list);
@@ -152,7 +151,7 @@ async function cli() {
                 ).paused = false;
             }
         } else if (user_input[0] == "help") {
-            print_help()
+            print_help();
         } else {
             console.log("Sorry, unrecognized command.");
         }
